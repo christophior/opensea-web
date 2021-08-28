@@ -18,10 +18,14 @@ const App = () => {
 	return (
 		<>
 			<h3 style={{ textAlign: 'center', color: '#ffffff' }}>
-				assets for {account}
+				assets for{' '}
+				<a href={`https://opensea.io/accounts/${account}`}>
+					{account.substring(0, 4)}...
+					{account.substring(account.length - 4)}
+				</a>
 			</h3>
 			<ul></ul>
-			<Table striped bordered hover variant="dark">
+			<Table striped bordered hover variant="dark" style={{ margin: '.5rem' }}>
 				<thead>
 					<tr>
 						<th>name</th>

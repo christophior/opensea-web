@@ -14,24 +14,30 @@ const formatNumber = (val) => formatCash(val).split('$')[1];
 
 export const getAssets = async ({ account, setAssets, setTotals }) => {
 	const { data } = await axios.get(
-		`https://api.opensea.io/api/v1/assets?owner=${account}&order_direction=desc&order_by=pk&offset=0&limit=20`
+		`https://api.allorigins.win/get?url=https://api.opensea.io/api/v1/assets?owner=${account}&order_direction=desc&order_by=pk&offset=0&limit=20`
 	);
 
-	const assetBaseInfo = data.assets.map((a) => ({
+	const { assets: userAssets } = JSON.parse(data.contents);
+
+	const assetBaseInfo = userAssets.map((a) => ({
 		id: a.id,
 		name: a.name,
 		description: a.description,
 		link: a.permalink,
 	}));
 
-	const ids = data.assets.map((a) => `${a.asset_contract.address}/${a.token_id}`);
+	const ids = userAssets.map((a) => `${a.asset_contract.address}/${a.token_id}`);
 	const assetCalls = ids.map((id) =>
-		axios.get(`https://api.opensea.io/api/v1/asset/${id}`)
+		axios.get(
+			`https://api.allorigins.win/get?url=https://api.opensea.io/api/v1/asset/${id}`
+		)
 	);
 
 	const results = await Promise.all(assetCalls.map((p) => p.catch((e) => e)));
 	const assetInfoData = results.filter((result) => !(result instanceof Error));
-	const assetInfo = assetInfoData.map((info) => processAssetInfo(info.data));
+	const assetInfo = assetInfoData.map((info) => {
+		return processAssetInfo(JSON.parse(info.data.contents));
+	});
 
 	const totals = {
 		topOffer: 0,

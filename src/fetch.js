@@ -14,7 +14,7 @@ const formatNumber = (val) => formatCash(val).split('$')[1];
 
 export const getAssets = async ({ account, setAssets, setTotals }) => {
 	const { data } = await axios.get(
-		`https://api.opensea.io/api/v1/assets?owner=${account}&order_direction=desc&order_by=visitor_count&offset=0&limit=20`
+		`https://api.opensea.io/api/v1/assets?owner=${account}&order_direction=desc&order_by=pk&offset=0&limit=20`
 	);
 
 	const assetBaseInfo = data.assets.map((a) => ({
@@ -29,7 +29,8 @@ export const getAssets = async ({ account, setAssets, setTotals }) => {
 		axios.get(`https://api.opensea.io/api/v1/asset/${id}`)
 	);
 
-	const assetInfoData = await Promise.all(assetCalls);
+	const results = await Promise.all(assetCalls.map((p) => p.catch((e) => e)));
+	const assetInfoData = results.filter((result) => !(result instanceof Error));
 	const assetInfo = assetInfoData.map((info) => processAssetInfo(info.data));
 
 	const totals = {

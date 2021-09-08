@@ -7,15 +7,21 @@ import is from 'is_js';
 import { getAssets } from './fetch';
 
 const App = () => {
-	const { account = '0x2e924d2aba625bf153a2f1c5c445bb63bd0d79e1' } = qs.parse(
-		window.location.search
-	);
+	const { account } = qs.parse(window.location.search);
 	const [assets, setAssets] = useState([]);
 	const [totals, setTotals] = useState({});
 
 	useEffect(() => {
-		getAssets({ account, setAssets, setTotals });
+		if (account) {
+			getAssets({ account, setAssets, setTotals });
+		}
 	}, []);
+
+	if (!account) {
+		window.location.replace(
+			'/?account=0x2e924d2aba625bf153a2f1c5c445bb63bd0d79e1'
+		);
+	}
 
 	return (
 		<>

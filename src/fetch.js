@@ -1,6 +1,12 @@
 import axios from 'axios';
 import get from 'lodash.get';
 
+axios.defaults.headers = {
+	'Cache-Control': 'no-cache',
+	Pragma: 'no-cache',
+	Expires: '0',
+};
+
 const desc = (a, b) => a.usd_price - b.usd_price;
 const asc = (a, b) => b.usd_price - a.usd_price;
 
